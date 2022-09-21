@@ -18,33 +18,6 @@ logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.ERROR)
 mylogger = logging.getLogger()
 
-
-@pytest.fixture(scope="session")
-def url(pytestconfig) -> str:
-    """
-    give the url from pytest options
-    :param pytestconfig: pytestconfig fixture
-    :return: url to integrate
-    """
-    return pytestconfig.getoption("url")
-
-
-@pytest.fixture
-def register_user():
-    return {
-      "email": "admin@sela.co.il",
-      "password": "123456"
-    }
-
-
-@pytest.fixture
-def unregister_user():
-    return {
-      "email": "deborahlea770@gmail.com",
-      "password": "123456"
-    }
-
-
 def enter_main_page(playwright, url) -> BasicPage:
     """
     A function that go to main page
