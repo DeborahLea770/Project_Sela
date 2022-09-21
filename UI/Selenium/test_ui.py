@@ -18,6 +18,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 import logging
+
+from UI.conftest import chromeDriver
+
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
 #chrom_driver_path = "C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe"
@@ -35,21 +38,14 @@ mylogger = logging.getLogger()
 #     """
 #     return pytestconfig.getoption("url")
 
-@pytest.fixture(scope="session")
-def chromeDriver(pytestconfig) -> str:
-    """
-    give the chromedriver from pytest options
-    :param pytestconfig: pytestconfig fixture
-    :return: url to integrate
-    """
-    return pytestconfig.getoption("chromeDriver")
+
 
 chrom_driver_path = chromeDriver
 
 @pytest.fixture
 def register_user():
     return {
-       "email": "admin@sela.co.il",
+      "email": "deborahlea770@gmail.com",
       "password": "123456"
     }
 
@@ -57,8 +53,8 @@ def register_user():
 @pytest.fixture
 def unregister_user():
     return {
-      "email": "deborahlea@sela.co.il",
-      "password": "35124"
+      "email": "deborahlean770@gmail.com",
+      "password": "123456"
     }
 
 
