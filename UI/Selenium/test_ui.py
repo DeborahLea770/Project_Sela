@@ -1,4 +1,6 @@
 import time
+from webbrowser import Chrome
+
 import selenium
 import pytest
 from selenium import webdriver
@@ -18,9 +20,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 import logging
+
+from UI.conftest import package_name
+
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
+
 chrom_driver_path = "C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe"
+# chrom_driver_path = package_name
 logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.ERROR)
 mylogger = logging.getLogger()
@@ -29,9 +36,11 @@ def enter_main_page(url) -> BasicPage:
     """
     A function that go to main page
     """
+
     driver = webdriver.Chrome(chrom_driver_path, chrome_options=chrome_options)
-    driver.maximize_window()
+    #driver = Chrome()
     driver.get(url)
+    driver.maximize_window()
     return BasicPage(driver)
 
 

@@ -28,7 +28,7 @@ def enter_main_page(playwright, url, brow) -> BasicPage:
     """
     if brow == "firefox":
        browser = playwright.firefox.launch(headless=False)
-    elif brow == "web":
+    elif brow == "webkit":
        browser = playwright.webkit.launch(headless=False)
     else:
        browser = playwright.chromium.launch(headless=False)
