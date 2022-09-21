@@ -2,9 +2,9 @@
 
 In this project im testing a small part of the UI of automation practice store site. im using playwright lib.
 
-to run with your own url driver if you run locally server
+to run with your own url driver and browser if you run locally server
 
-pytest .\UI\Selenium\test_ui.py --url http://localhost
+pytest .\UI\Selenium\test_ui.py --url http://localhost --brow firefox
 
 allure reports
 <img width="960" alt="allure_ui_playwright" src="https://user-images.githubusercontent.com/67972489/191495367-7b54a84e-ffbd-4e17-95f3-ee30a3f615b7.png">
