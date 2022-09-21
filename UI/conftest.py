@@ -41,7 +41,7 @@ def brow(pytestconfig) -> str:
     """
     return pytestconfig.getoption("brow")
 
-
+#selenium
 @pytest.fixture
 def package_name(pytestconfig) -> str:
     """

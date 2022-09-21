@@ -21,16 +21,6 @@ logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.ERROR)
 mylogger = logging.getLogger()
 from UI.conftest import brow
-# def enter_main_page(playwright, url) -> BasicPage:
-#     """
-#     A function that go to main page
-#     """
-#     browser = playwright.chromium.launch(headless=False)
-#     context = browser.new_context()
-#     page = context.new_page()
-#     page.goto(url)
-#     page.on('dialog', lambda dialog: dialog.accept())
-#     return BasicPage(page)
 
 def enter_main_page(playwright, url, brow) -> BasicPage:
     """
