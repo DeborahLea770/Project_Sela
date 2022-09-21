@@ -1,5 +1,8 @@
 import time
 import pytest
+from _pytest.fixtures import pytestconfig
+
+import UI.conftest
 from UI.Playwright.page_models.loginPage import LoginPage
 from UI.Playwright.page_models.storePage import StorePage
 from UI.Playwright.page_models.registerPage import RegisterPage
@@ -17,18 +20,31 @@ from playwright.sync_api import Dialog
 logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.ERROR)
 mylogger = logging.getLogger()
+from UI.conftest import brow
+# def enter_main_page(playwright, url) -> BasicPage:
+#     """
+#     A function that go to main page
+#     """
+#     browser = playwright.chromium.launch(headless=False)
+#     context = browser.new_context()
+#     page = context.new_page()
+#     page.goto(url)
+#     page.on('dialog', lambda dialog: dialog.accept())
+#     return BasicPage(page)
 
-def enter_main_page(playwright, url) -> BasicPage:
+def enter_main_page(playwright, url, brow) -> BasicPage:
     """
     A function that go to main page
     """
-    browser = playwright.chromium.launch(headless=False)
+    if brow == "firefox":
+       browser = playwright.firefox.launch(headless=False)
+    else:
+       browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
     page.goto(url)
     page.on('dialog', lambda dialog: dialog.accept())
     return BasicPage(page)
-
 
 def enter_store_page(page):
     """
@@ -37,13 +53,13 @@ def enter_store_page(page):
     return StorePage(page.click_store_link())
 
 
-def open_login_page_and_submit(playwright, url, email: str, password: str):
+def open_login_page_and_submit(playwright, url,brow, email: str, password: str):
     """
     A function that enter login page and submit the login form by two inputs which sent as parameters
     :param email: str, email input
     :param password: str, password input
     """
-    main_page = enter_main_page(playwright, url)
+    main_page = enter_main_page(playwright, url , brow)
     login_page = LoginPage(main_page.page)
     login_page.fill_email_input(email)
     login_page.fill_password_input(password)
@@ -52,13 +68,13 @@ def open_login_page_and_submit(playwright, url, email: str, password: str):
     return next_page
 
 
-def open_register_page_and_submit(url, email: str, password: str, firstname: str, lastname: str):
+def open_register_page_and_submit(url,brow, email: str, password: str, firstname: str, lastname: str):
     """
     A function that enter to register page and submit the register form
     by register inputs which sent as parameters
     """
     with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        main_page = enter_main_page(playwright, url, brow)
         login_page = LoginPage(main_page.page)
         register_page = RegisterPage(login_page.click_register_button())
         register_page.fill_email_input(email)
@@ -98,10 +114,10 @@ def message_after_purchase(dialog, text: str):
     assert text in dialog.message
 
 
-def test_links(url):
+def test_links(url , brow ):
     mylogger.info("test for the main links")
     with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        main_page = enter_main_page(playwright, url , brow)
         store_page = StorePage(main_page.click_store_link())
         assert store_page.url() == "http://localhost/store"
         authors_page = AuthorsPage(main_page.click_authors_link())
@@ -110,101 +126,101 @@ def test_links(url):
         assert login_page.url() == "http://localhost/"
 
 ## REGISTER
-def test_register_empty_email(url, unregister_user):
+def test_register_empty_email(url,brow,unregister_user):
     mylogger.info("test for register with empty email input")
-    register_page = open_register_page_and_submit(url, "", unregister_user["password"], "deborah", "fellous")
+    register_page = open_register_page_and_submit(url,brow, "", unregister_user["password"], "deborah", "fellous")
     assert register_page.url() == "http://localhost/register"
 
 
-def test_register_invalid_email(url, unregister_user):
+def test_register_invalid_email(url,brow, unregister_user):
     mylogger.info("test for register with invalid email input")
-    register_page = open_register_page_and_submit(url, "admin@", unregister_user["password"], "deborah", "fellous")
+    register_page = open_register_page_and_submit(url,brow, "admin@", unregister_user["password"], "deborah", "fellous")
     assert register_page.url() == "http://localhost/register"
 
 
-def test_register_shorter_password(url, unregister_user):
+def test_register_shorter_password(url,brow, unregister_user):
     mylogger.info("test for register with password input shorter than allowed")
-    register_page = open_register_page_and_submit(url, unregister_user["email"], "123", "deborah", "fellous")
+    register_page = open_register_page_and_submit(url,brow, unregister_user["email"], "123", "deborah", "fellous")
     assert register_page.url() == "http://localhost/register"
 
 
-def test_register_longer_password(url, unregister_user):
+def test_register_longer_password(url,brow, unregister_user):
     mylogger.info("test for register with password input longer than allowed")
-    register_page = open_register_page_and_submit(url, unregister_user["email"], "12345678910111213", "deborah", "fellous")
+    register_page = open_register_page_and_submit(url,brow, unregister_user["email"], "12345678910111213", "deborah", "fellous")
     assert register_page.url() == "http://localhost/register"
 
 
-def test_register_empty_password(url, unregister_user):
+def test_register_empty_password(url,brow, unregister_user):
     mylogger.info("test for register with empty password input")
-    register_page = open_register_page_and_submit(url, unregister_user["email"], "", "deborah", "fellous")
+    register_page = open_register_page_and_submit(url,brow, unregister_user["email"], "", "deborah", "fellous")
     assert register_page.url() == "http://localhost/register"
 
 
-def test_register_empty_firstname(url, unregister_user):
+def test_register_empty_firstname(url,brow, unregister_user):
     mylogger.info("test for register with empty firstname input")
-    register_page = open_register_page_and_submit(url, unregister_user["email"], unregister_user["password"], "", "fellous")
+    register_page = open_register_page_and_submit(url,brow, unregister_user["email"], unregister_user["password"], "", "fellous")
     assert register_page.url() == "http://localhost/register"
 
 
-def test_register_empty_lastname(url, unregister_user):
+def test_register_empty_lastname(url,brow, unregister_user):
     mylogger.info("test for register with empty lastname input")
-    register_page = open_register_page_and_submit(url, unregister_user["email"], unregister_user["password"], "deborah", "")
+    register_page = open_register_page_and_submit(url,brow, unregister_user["email"], unregister_user["password"], "deborah", "")
     assert register_page.url() == "http://localhost/register"
 
 
-def test_register_registered_email(url, register_user):
+def test_register_registered_email(url,brow, register_user):
     mylogger.info("test for register with registered user")
-    register_page = open_register_page_and_submit(url, register_user["email"], "12345", "deborah", "fellous")
+    register_page = open_register_page_and_submit(url,brow, register_user["email"], "12345", "deborah", "fellous")
     assert register_page.url() == "http://localhost/register"
 
 
 @pytest.mark.skip(reason="No details about what happen after valid registration")
-def test_register_valid(url, unregister_user):
+def test_register_valid(url,brow, unregister_user):
     mylogger.info("test for valid registration")
-    register_page = open_register_page_and_submit(url, unregister_user["email"], unregister_user["password"], "deborah", "fellous")
+    register_page = open_register_page_and_submit(url,brow, unregister_user["email"], unregister_user["password"], "deborah", "fellous")
     assert register_page.url() == "http://localhost/store"
 
 ###LOGIN
 
-def test_login_empty_email(url, register_user):
+def test_login_empty_email(url,brow, register_user):
     mylogger.info("test for login with empty email input")
     with sync_playwright() as playwright:
-        next_page = open_login_page_and_submit(playwright,url, "", register_user["password"])
+        next_page = open_login_page_and_submit(playwright,url,brow, "", register_user["password"])
     assert next_page.url() == "http://localhost/"
 
 
-def test_login_invalid_email(url, register_user):
+def test_login_invalid_email(url,brow, register_user):
     mylogger.info("test for login with invalid email input")
     with sync_playwright() as playwright:
-        next_page = open_login_page_and_submit(playwright,url, "admin@", register_user["password"])
+        next_page = open_login_page_and_submit(playwright,url,brow, "admin@", register_user["password"])
     assert next_page.url() == "http://localhost/"
 
 
-def test_login_empty_password(url, register_user):
+def test_login_empty_password(url,brow, register_user):
     mylogger.info("test for login with empty password input")
     with sync_playwright() as playwright:
-        next_page = open_login_page_and_submit(playwright,url, register_user["email"], "")
+        next_page = open_login_page_and_submit(playwright,url,brow, register_user["email"], "")
     assert next_page.url() == "http://localhost/"
 
 
-def test_login_unregistered_user(url, unregister_user):
+def test_login_unregistered_user(url,brow, unregister_user):
     mylogger.info("test for login with unregistered user")
     with sync_playwright() as playwright:
-        next_page = open_login_page_and_submit(playwright,url, unregister_user["email"], unregister_user["password"])
+        next_page = open_login_page_and_submit(playwright,url,brow, unregister_user["email"], unregister_user["password"])
     assert next_page.url() == "http://localhost/"
 
 
-def test_login_registered_user(url, register_user):
+def test_login_registered_user(url,brow, register_user):
     mylogger.info("test for login with registered user")
     with sync_playwright() as playwright:
-        next_page = open_login_page_and_submit(playwright,url, register_user["email"], register_user["password"])
+        next_page = open_login_page_and_submit(playwright,url,brow, register_user["email"], register_user["password"])
     assert next_page.url() == "http://localhost/store"
 
 #STORE BOOK
-def test_buy_book_without_login(url, register_user):
+def test_buy_book_without_login(url,brow, register_user):
     mylogger.info("test for buy book without login")
     with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        main_page = enter_main_page(playwright, url,brow)
         store_page = enter_store_page(main_page)
         store_page.page.wait_for_selector('.book-container')
         books = store_page.books_of_the_store()
@@ -212,10 +228,10 @@ def test_buy_book_without_login(url, register_user):
         store_page.buy_book(random.randint(0, books.count()-1))
 
 
-def test_buy_book_with_login(url, register_user):
+def test_buy_book_with_login(url,brow, register_user):
     mylogger.info("test for buy book with login")
     with sync_playwright() as playwright:
-        store_page = open_login_page_and_submit(playwright, url, register_user["email"], register_user["password"])
+        store_page = open_login_page_and_submit(playwright, url,brow, register_user["email"], register_user["password"])
         books = store_page.books_of_the_store()
         for num in range(books.count()):
             if store_page.book_amount(num) > 0:
@@ -229,10 +245,10 @@ def test_buy_book_with_login(url, register_user):
                 break
 
 
-def test_buy_book_zero_amount(url, register_user):
+def test_buy_book_zero_amount(url,brow, register_user):
     mylogger.info("test for buy book with 0 amount")
     with sync_playwright() as playwright:
-        store_page = open_login_page_and_submit(playwright, url, register_user["email"], register_user["password"])
+        store_page = open_login_page_and_submit(playwright, url,brow, register_user["email"], register_user["password"])
         books = store_page.books_of_the_store()
         for num in range(books.count()):
             if store_page.book_amount(num) == 0:
@@ -244,20 +260,20 @@ def test_buy_book_zero_amount(url, register_user):
                 break
 
 
-def test_logout(url, register_user):
+def test_logout(url,brow, register_user):
     mylogger.info("test for logout the user")
     with sync_playwright() as playwright:
-        store_page = open_login_page_and_submit(playwright, url, register_user["email"], register_user["password"])
+        store_page = open_login_page_and_submit(playwright, url,brow, register_user["email"], register_user["password"])
         store_page.page.on('dialog', lambda dialog: message_after_purchase(dialog, "Must be signed in to purchase"))
         store_page.click_logout_button()
         books = store_page.books_of_the_store()
         store_page.buy_book(random.randint(0, books.count()-1))
 
 
-def test_link_to_author_page(url):
+def test_link_to_author_page(url,brow):
     mylogger.info("test for enter to some author page from store page")
     with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        main_page = enter_main_page(playwright, url,brow)
         authors_page = enter_authors_page(main_page)
         authors = authors_page.authors_of_the_store()
         author = random.randint(0, authors.count()-1)
@@ -266,10 +282,10 @@ def test_link_to_author_page(url):
         assert author_name == author_page.author_name()
 
 ###AUTHOR
-def test_books_of_author_in_author_page(url):
+def test_books_of_author_in_author_page(url,brow):
     mylogger.info("test for book in some author page")
     with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        main_page = enter_main_page(playwright, url,brow)
         authors_page = enter_authors_page(main_page)
         authors = authors_page.authors_of_the_store()
         author = random.randint(0, authors.count()-1)
@@ -280,10 +296,10 @@ def test_books_of_author_in_author_page(url):
             assert author_page.author_name() in book
 
 
-def test_valid_amount_author_books(url):
+def test_valid_amount_author_books(url,brow):
     mylogger.info("test for valid amount of books in some author page")
     with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        main_page = enter_main_page(playwright, url,brow)
         authors_page = enter_authors_page(main_page)
         authors = authors_page.authors_of_the_store()
         author = random.randint(0, authors.count() - 1)
@@ -295,10 +311,10 @@ def test_valid_amount_author_books(url):
         assert author_books == len(list(filtered))
 
 #SEARCH
-def test_empty_search_input(url):
+def test_empty_search_input(url,brow):
     mylogger.info("test for search with empty search input")
     with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        main_page = enter_main_page(playwright, url,brow)
         search_page = enter_search_page(main_page, "")
         search_page.page.wait_for_selector('.card-group')
         search_results = search_page.search_results()
@@ -307,10 +323,10 @@ def test_empty_search_input(url):
         assert len(search_results) == authors_and_books
 
 
-def test_book_search(url):
+def test_book_search(url,brow):
     mylogger.info("test for search for some book")
     with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        main_page = enter_main_page(playwright, url,brow)
         store_page = enter_store_page(main_page)
         books = store_page.books_of_the_store()
         book = random.randint(0, books.count()-1)
@@ -323,10 +339,10 @@ def test_book_search(url):
             assert book_name in result.inner_text()
 
 
-def test_author_search(url):
+def test_author_search(url,brow):
     mylogger.info("test for search for some author")
     with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        main_page = enter_main_page(playwright, url,brow)
         authors_page = enter_authors_page(main_page)
         authors = authors_page.authors_of_the_store().count()
         author = random.randint(0, authors - 1)
@@ -338,10 +354,10 @@ def test_author_search(url):
             assert author_name in result
 
 
-def test_fake_book_search(url):
+def test_fake_book_search(url,brow):
     mylogger.info("test for search for some book that not exists in the system")
     with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        main_page = enter_main_page(playwright, url,brow)
         store_page = StorePage(main_page.click_store_link())
         books = store_page.books_of_the_store()
         store_page.page.wait_for_selector('.book-container')
@@ -355,10 +371,10 @@ def test_fake_book_search(url):
             assert len(search_results) == 0
 
 
-def test_fake_author_search(url):
+def test_fake_author_search(url,brow):
     mylogger.info("test for search for some author that not exists in the system")
     with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        main_page = enter_main_page(playwright, url,brow)
         authors_page = enter_authors_page(main_page)
         authors = authors_page.authors_of_the_store()
         authors_page.page.wait_for_selector('.author-container')

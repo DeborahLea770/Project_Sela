@@ -1,4 +1,5 @@
 import time
+import selenium
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -14,16 +15,15 @@ from selenium.webdriver.support import expected_conditions as EC
 import random
 import string
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import ActionChains
 import logging
-from UI.conftest import package_name
-
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
+chrom_driver_path = "C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe"
 logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.ERROR)
 mylogger = logging.getLogger()
-chrom_driver_path = package_name
-
 
 def enter_main_page(url) -> BasicPage:
     """
