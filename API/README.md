@@ -1,6 +1,5 @@
 **api-testing**
 
-install requrements file 
 
 to run with your own url if you run locally server
 
