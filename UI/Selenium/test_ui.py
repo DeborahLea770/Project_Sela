@@ -20,21 +20,31 @@ from selenium.webdriver import ActionChains
 import logging
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
-chrom_driver_path = "C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe"
+#chrom_driver_path = "C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe"
 logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.ERROR)
 mylogger = logging.getLogger()
 
 
+# @pytest.fixture(scope="session")
+# def url(pytestconfig) -> str:
+#     """
+#     give the url from pytest options
+#     :param pytestconfig: pytestconfig fixture
+#     :return: url to integrate
+#     """
+#     return pytestconfig.getoption("url")
+
 @pytest.fixture(scope="session")
-def url(pytestconfig) -> str:
+def chromeDriver(pytestconfig) -> str:
     """
-    give the url from pytest options
+    give the chromedriver from pytest options
     :param pytestconfig: pytestconfig fixture
     :return: url to integrate
     """
-    return pytestconfig.getoption("url")
+    return pytestconfig.getoption("chromeDriver")
 
+chrom_driver_path = chromeDriver
 
 @pytest.fixture
 def register_user():
