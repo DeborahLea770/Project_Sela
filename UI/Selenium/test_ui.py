@@ -36,7 +36,7 @@ logging.basicConfig(level=logging.INFO)
 mylogger = logging.getLogger()
 
 
-def enter_main_page(url,brow) -> BasicPage:
+def enter_main_page(url) -> BasicPage:
     """
     A function that go to main page
     """
@@ -62,13 +62,13 @@ def enter_store_page(page):
     return StorePage(page.click_store_link())
 
 
-def open_login_page_and_submit(url,brow, email: str, password: str):
+def open_login_page_and_submit(url, email: str, password: str):
     """
     A function that enter login page and submit the login form by two inputs which sent as parameters
     :param email: str, email input
     :param password: str, password input
     """
-    main_page = enter_main_page(url,brow)
+    main_page = enter_main_page(url)
     login_page = LoginPage(main_page.driver)
     login_page.fill_email_input(email)
     login_page.fill_password_input(password)
@@ -77,12 +77,12 @@ def open_login_page_and_submit(url,brow, email: str, password: str):
     return next_page
 
 
-def open_register_page_and_submit(url,brow, email: str, password: str, firstname: str, lastname: str):
+def open_register_page_and_submit(url, email: str, password: str, firstname: str, lastname: str):
     """
     A function that enter to register page and submit the register form
     by register inputs which sent as parameters
     """
-    main_page = enter_main_page(url,brow)
+    main_page = enter_main_page(url)
     login_page = LoginPage(main_page.driver)
     register_page = RegisterPage(login_page.click_register_button())
     register_page.fill_email_input(email)
@@ -111,9 +111,9 @@ def enter_search_page(page, text):
     return SearchPage(page.click_search_button())
 
 
-def test_links(url,brow):
+def test_links(url):
     mylogger.info("test for the main links")
-    main_page = enter_main_page(url,brow)
+    main_page = enter_main_page(url)
     store_page = StorePage(main_page.click_store_link())
     assert store_page.url() == "http://localhost/store"
     authors_page = AuthorsPage(main_page.click_authors_link())
