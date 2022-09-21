@@ -16,3 +16,12 @@ def url(pytestconfig) -> str:
     return pytestconfig.getoption("url")
 
 
+@pytest.fixture
+def chromeDriver(pytestconfig) -> str:
+    """
+    give the chromedriver from pytest options
+    :param pytestconfig: pytestconfig fixture
+    :return: url to integrate
+    """
+    return pytestconfig.getoption("chromeDriver")
+
