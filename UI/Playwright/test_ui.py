@@ -19,14 +19,14 @@ logging.basicConfig(level=logging.ERROR)
 mylogger = logging.getLogger()
 
 
-@pytest.fixture(scope="session")
-def url(pytestconfig) -> str:
-    """
-    give the url from pytest options
-    :param pytestconfig: pytestconfig fixture
-    :return: url to integrate
-    """
-    return pytestconfig.getoption("url")
+# @pytest.fixture(scope="session")
+# def url(pytestconfig) -> str:
+#     """
+#     give the url from pytest options
+#     :param pytestconfig: pytestconfig fixture
+#     :return: url to integrate
+#     """
+#     return pytestconfig.getoption("url")
 
 
 @pytest.fixture
@@ -45,11 +45,12 @@ def unregister_user():
     }
 
 
-def enter_main_page(playwright, url) -> BasicPage:
+def enter_main_page(url) -> BasicPage:
     """
     A function that go to main page
     """
-    browser = playwright.chromium.launch(headless=False)
+    with sync_playwright() as playwright:
+      browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
     page.goto(url)
@@ -64,13 +65,13 @@ def enter_store_page(page):
     return StorePage(page.click_store_link())
 
 
-def open_login_page_and_submit(playwright, url, email: str, password: str):
+def open_login_page_and_submit(url, email: str, password: str):
     """
     A function that enter login page and submit the login form by two inputs which sent as parameters
     :param email: str, email input
     :param password: str, password input
     """
-    main_page = enter_main_page(playwright, url)
+    main_page = enter_main_page(url)
     login_page = LoginPage(main_page.page)
     login_page.fill_email_input(email)
     login_page.fill_password_input(password)
@@ -84,17 +85,17 @@ def open_register_page_and_submit(url, email: str, password: str, firstname: str
     A function that enter to register page and submit the register form
     by register inputs which sent as parameters
     """
-    with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
-        login_page = LoginPage(main_page.page)
-        register_page = RegisterPage(login_page.click_register_button())
-        register_page.fill_email_input(email)
-        register_page.fill_password_input(password)
-        register_page.fill_firstname_input(firstname)
-        register_page.fill_lastname_input(lastname)
-        register_page.click_sign_up()
-        register_page.page.wait_for_timeout(2000)
-        return register_page
+
+    main_page = enter_main_page(url)
+    login_page = LoginPage(main_page.page)
+    register_page = RegisterPage(login_page.click_register_button())
+    register_page.fill_email_input(email)
+    register_page.fill_password_input(password)
+    register_page.fill_firstname_input(firstname)
+    register_page.fill_lastname_input(lastname)
+    register_page.click_sign_up()
+    register_page.page.wait_for_timeout(2000)
+    return register_page
 
 
 def enter_authors_page(page):
@@ -127,14 +128,13 @@ def message_after_purchase(dialog, text: str):
 
 def test_links(url):
     mylogger.info("test for the main links")
-    with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
-        store_page = StorePage(main_page.click_store_link())
-        assert store_page.url() == "http://localhost/store"
-        authors_page = AuthorsPage(main_page.click_authors_link())
-        assert authors_page.url() == "http://localhost/authors"
-        login_page = LoginPage(main_page.click_login_link())
-        assert login_page.url() == "http://localhost/"
+    main_page = enter_main_page(url)
+    store_page = StorePage(main_page.click_store_link())
+    assert store_page.url() == "http://localhost/store"
+    authors_page = AuthorsPage(main_page.click_authors_link())
+    assert authors_page.url() == "http://localhost/authors"
+    login_page = LoginPage(main_page.click_login_link())
+    assert login_page.url() == "http://localhost/"
 
 ## REGISTER
 def test_register_empty_email(url, unregister_user):
@@ -230,13 +230,12 @@ def test_login_registered_user(url, register_user):
 #STORE BOOK
 def test_buy_book_without_login(url, register_user):
     mylogger.info("test for buy book without login")
-    with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
-        store_page = enter_store_page(main_page)
-        store_page.page.wait_for_selector('.book-container')
-        books = store_page.books_of_the_store()
-        store_page.page.on('dialog', lambda dialog: message_after_purchase(dialog, "Must be signed in to purchase"))
-        store_page.buy_book(random.randint(0, books.count()-1))
+    main_page = enter_main_page(url)
+    store_page = enter_store_page(main_page)
+    store_page.page.wait_for_selector('.book-container')
+    books = store_page.books_of_the_store()
+    store_page.page.on('dialog', lambda dialog: message_after_purchase(dialog, "Must be signed in to purchase"))
+    store_page.buy_book(random.randint(0, books.count()-1))
 
 
 def test_buy_book_with_login(url, register_user):
@@ -283,49 +282,45 @@ def test_logout(url, register_user):
 
 def test_link_to_author_page(url):
     mylogger.info("test for enter to some author page from store page")
-    with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
-        authors_page = enter_authors_page(main_page)
-        authors = authors_page.authors_of_the_store()
-        author = random.randint(0, authors.count()-1)
-        author_name = authors_page.author_name(author)
-        author_page = AuthorPage(authors_page.to_author_page(author))
-        assert author_name == author_page.author_name()
+    main_page = enter_main_page(url)
+    authors_page = enter_authors_page(main_page)
+    authors = authors_page.authors_of_the_store()
+    author = random.randint(0, authors.count()-1)
+    author_name = authors_page.author_name(author)
+    author_page = AuthorPage(authors_page.to_author_page(author))
+    assert author_name == author_page.author_name()
 
 ###AUTHOR
 def test_books_of_author_in_author_page(url):
     mylogger.info("test for book in some author page")
-    with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
-        authors_page = enter_authors_page(main_page)
-        authors = authors_page.authors_of_the_store()
-        author = random.randint(0, authors.count()-1)
-        author_page = AuthorPage(authors_page.to_author_page(author))
-        author_page.page.wait_for_selector('.book-container')
-        books = author_page.author_books()
-        for book in books.all_inner_texts():
-            assert author_page.author_name() in book
+    main_page = enter_main_page(url)
+    authors_page = enter_authors_page(main_page)
+    authors = authors_page.authors_of_the_store()
+    author = random.randint(0, authors.count()-1)
+    author_page = AuthorPage(authors_page.to_author_page(author))
+    author_page.page.wait_for_selector('.book-container')
+    books = author_page.author_books()
+    for book in books.all_inner_texts():
+         assert author_page.author_name() in book
 
 
 def test_valid_amount_author_books(url):
     mylogger.info("test for valid amount of books in some author page")
-    with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
-        authors_page = enter_authors_page(main_page)
-        authors = authors_page.authors_of_the_store()
-        author = random.randint(0, authors.count() - 1)
-        author_page = AuthorPage(authors_page.to_author_page(author))
-        author_name = author_page.author_name()
-        author_books = author_page.author_books().count()
-        store_page = enter_store_page(author_page)
-        filtered = filter(lambda book: author_name in book, store_page.books_of_the_store().all_inner_texts())
-        assert author_books == len(list(filtered))
+    main_page = enter_main_page(url)
+    authors_page = enter_authors_page(main_page)
+    authors = authors_page.authors_of_the_store()
+    author = random.randint(0, authors.count() - 1)
+    author_page = AuthorPage(authors_page.to_author_page(author))
+    author_name = author_page.author_name()
+    author_books = author_page.author_books().count()
+    store_page = enter_store_page(author_page)
+    filtered = filter(lambda book: author_name in book, store_page.books_of_the_store().all_inner_texts())
+    assert author_books == len(list(filtered))
 
 #SEARCH
 def test_empty_search_input(url):
-    mylogger.info("test for search with empty search input")
-    with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        mylogger.info("test for search with empty search input")
+        main_page = enter_main_page(url)
         search_page = enter_search_page(main_page, "")
         search_page.page.wait_for_selector('.card-group')
         search_results = search_page.search_results()
@@ -335,9 +330,8 @@ def test_empty_search_input(url):
 
 
 def test_book_search(url):
-    mylogger.info("test for search for some book")
-    with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        mylogger.info("test for search for some book")
+        main_page = enter_main_page(url)
         store_page = enter_store_page(main_page)
         books = store_page.books_of_the_store()
         book = random.randint(0, books.count()-1)
@@ -351,9 +345,8 @@ def test_book_search(url):
 
 
 def test_author_search(url):
-    mylogger.info("test for search for some author")
-    with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        mylogger.info("test for search for some author")
+        main_page = enter_main_page(url)
         authors_page = enter_authors_page(main_page)
         authors = authors_page.authors_of_the_store().count()
         author = random.randint(0, authors - 1)
@@ -366,9 +359,8 @@ def test_author_search(url):
 
 
 def test_fake_book_search(url):
-    mylogger.info("test for search for some book that not exists in the system")
-    with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        mylogger.info("test for search for some book that not exists in the system")
+        main_page = enter_main_page(url)
         store_page = StorePage(main_page.click_store_link())
         books = store_page.books_of_the_store()
         store_page.page.wait_for_selector('.book-container')
@@ -383,9 +375,8 @@ def test_fake_book_search(url):
 
 
 def test_fake_author_search(url):
-    mylogger.info("test for search for some author that not exists in the system")
-    with sync_playwright() as playwright:
-        main_page = enter_main_page(playwright, url)
+        mylogger.info("test for search for some author that not exists in the system")
+        main_page = enter_main_page(url)
         authors_page = enter_authors_page(main_page)
         authors = authors_page.authors_of_the_store()
         authors_page.page.wait_for_selector('.author-container')
