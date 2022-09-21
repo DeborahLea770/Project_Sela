@@ -1,5 +1,20 @@
 import pytest
 
+@pytest.fixture
+def register_user():
+    return {
+      "email": "admin@sela.co.il",
+      "password": "123456"
+    }
+
+
+@pytest.fixture
+def unregister_user():
+    return {
+      "email": "deborahlea770@gmail.com",
+      "password": "123456"
+    }
+
 
 def pytest_addoption(parser):
     parser.addoption("--url", action="store", default="http://localhost")
