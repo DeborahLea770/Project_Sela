@@ -24,21 +24,6 @@ logging.basicConfig(level=logging.ERROR)
 mylogger = logging.getLogger()
 chrom_driver_path = chromeDriver
 
-@pytest.fixture
-def register_user():
-    return {
-      "email": "admin@sela.co.il",
-      "password": "123456"
-    }
-
-
-@pytest.fixture
-def unregister_user():
-    return {
-      "email": "deborahlea770@gmail.com",
-      "password": "123456"
-    }
-
 
 def enter_main_page(url) -> BasicPage:
     """
