@@ -1,6 +1,8 @@
-**UI Testing Automation Project.**
+**Playwright Testing Automation Project.**
 
-In this project im testing a small part of the UI of automation practice store site. im using playwright lib.
+In this project im testing a small part of the UI of automation practice store site.
+
+im using playwright lib.
 
 to run with your own url driver and browser if you run locally server
 
