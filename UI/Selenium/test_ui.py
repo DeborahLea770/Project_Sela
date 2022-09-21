@@ -4,6 +4,7 @@ from webbrowser import Chrome
 import selenium
 import pytest
 from selenium import webdriver
+from selenium.webdriver import Chrome, Firefox
 from selenium.webdriver.chrome.options import Options
 from UI.Selenium.page_models.loginPage import LoginPage
 from UI.Selenium.page_models.storePage import StorePage
@@ -22,25 +23,35 @@ from selenium.webdriver import ActionChains
 import logging
 
 from UI.conftest import package_name
+# chrom_driver_path = package_name
 
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
 
 chrom_driver_path = "C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe"
-# chrom_driver_path = package_name
+firefox_driver_path ="C:/Users/debor/Downloads/mozilla-geckodriver-9b5f85c"
+
+
 logging.basicConfig(level=logging.INFO)
-logging.basicConfig(level=logging.ERROR)
 mylogger = logging.getLogger()
 
-def enter_main_page(url) -> BasicPage:
+
+def enter_main_page(url,brow) -> BasicPage:
     """
     A function that go to main page
     """
 
-    driver = webdriver.Chrome(chrom_driver_path, chrome_options=chrome_options)
-    #driver = Chrome()
+    driver = webdriver.Chrome(chrom_driver_path)
+    #driver = webdriver.Firefox(firefox_driver_path)
     driver.get(url)
     driver.maximize_window()
+
+    # if brow == "firefox":
+    #     driver = Firefox()
+    # else:
+    #     driver = Chrome()
+    # driver.get(url)
+    # driver.maximize_window()
     return BasicPage(driver)
 
 
@@ -51,13 +62,13 @@ def enter_store_page(page):
     return StorePage(page.click_store_link())
 
 
-def open_login_page_and_submit(url, email: str, password: str):
+def open_login_page_and_submit(url,brow, email: str, password: str):
     """
     A function that enter login page and submit the login form by two inputs which sent as parameters
     :param email: str, email input
     :param password: str, password input
     """
-    main_page = enter_main_page(url)
+    main_page = enter_main_page(url,brow)
     login_page = LoginPage(main_page.driver)
     login_page.fill_email_input(email)
     login_page.fill_password_input(password)
@@ -66,12 +77,12 @@ def open_login_page_and_submit(url, email: str, password: str):
     return next_page
 
 
-def open_register_page_and_submit(url, email: str, password: str, firstname: str, lastname: str):
+def open_register_page_and_submit(url,brow, email: str, password: str, firstname: str, lastname: str):
     """
     A function that enter to register page and submit the register form
     by register inputs which sent as parameters
     """
-    main_page = enter_main_page(url)
+    main_page = enter_main_page(url,brow)
     login_page = LoginPage(main_page.driver)
     register_page = RegisterPage(login_page.click_register_button())
     register_page.fill_email_input(email)
@@ -100,9 +111,9 @@ def enter_search_page(page, text):
     return SearchPage(page.click_search_button())
 
 
-def test_links(url):
+def test_links(url,brow):
     mylogger.info("test for the main links")
-    main_page = enter_main_page(url)
+    main_page = enter_main_page(url,brow)
     store_page = StorePage(main_page.click_store_link())
     assert store_page.url() == "http://localhost/store"
     authors_page = AuthorsPage(main_page.click_authors_link())
