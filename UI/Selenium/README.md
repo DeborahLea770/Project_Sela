@@ -1,8 +1,10 @@
-**UI Testing Automation Project**
+**Selenium Testing Automation Project**
 
-In this project im testing a small part of the UI of automation practice store site. im using selenium lib.
+In this project im testing a small part of the UI of automation practice store site.
 
-to run with default url and all tests
+im using selenium lib.
+
+to run with default url and browser with all tests
 
  pytest .\UI\Selenium\test_ui.py 
 
