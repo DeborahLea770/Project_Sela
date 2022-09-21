@@ -6,11 +6,11 @@ im using selenium lib.
 
 to run with default url and browser with all tests
 
- pytest .\UI\Selenium\test_ui.py 
+`pytest .\UI\Selenium\test_ui.py`
 
 to run with your own url and browser if you run locally server
 
-pytest .\UI\Selenium\test_ui.py --url http://localhost --brow edge
+`pytest .\UI\Selenium\test_ui.py --url http://localhost --brow edge`
 
 allure reports
 
