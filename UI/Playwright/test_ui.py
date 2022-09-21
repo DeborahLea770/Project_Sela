@@ -32,7 +32,7 @@ mylogger = logging.getLogger()
 @pytest.fixture
 def register_user():
     return {
-      "email": "admin@sela.co.il",
+      "email": "deborahlea770@gmail.com",
       "password": "123456"
     }
 
@@ -40,7 +40,7 @@ def register_user():
 @pytest.fixture
 def unregister_user():
     return {
-      "email": "deborahlea770@gmail.com",
+      "email": "deborahleam770@gmail.com",
       "password": "123456"
     }
 
@@ -76,7 +76,7 @@ def open_login_page_and_submit(url, email: str, password: str):
     login_page.fill_email_input(email)
     login_page.fill_password_input(password)
     next_page = StorePage(login_page.click_sign_in())
-    next_page.page.wait_for_timeout(2000)
+    #next_page.page.wait_for_timeout(2000)
     return next_page
 
 
@@ -210,7 +210,7 @@ def test_login_invalid_email(url, register_user):
 def test_login_empty_password(url, register_user):
     mylogger.info("test for login with empty password input")
     with sync_playwright() as playwright:
-        next_page = open_login_page_and_submit(playwright,url, register_user["email"], "")
+        next_page = open_login_page_and_submit(playwright,url, register_user["email"],"")
     assert next_page.url() == "http://localhost/"
 
 
