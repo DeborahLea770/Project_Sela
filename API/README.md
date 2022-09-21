@@ -1,0 +1,1 @@
+![](../../allure_api.png)
