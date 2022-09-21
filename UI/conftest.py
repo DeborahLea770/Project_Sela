@@ -18,7 +18,7 @@ def unregister_user():
 
 def pytest_addoption(parser):
     parser.addoption("--url", action="store", default="http://localhost")
-    parser.addoption("--chromeDriver", action="store", default="C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe")
+    parser.addoption("--packagename", action="store", default="C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe")
 
 
 @pytest.fixture
@@ -32,11 +32,11 @@ def url(pytestconfig) -> str:
 
 
 @pytest.fixture
-def chromeDriver(pytestconfig) -> str:
+def package_name(pytestconfig) -> str:
     """
-    give the chromedriver from pytest options
+    give the package_name from pytest options
     :param pytestconfig: pytestconfig fixture
-    :return: url to integrate
+    :return: package_name to integrate
     """
-    return pytestconfig.getoption("chromeDriver")
+    return pytestconfig.getoption("packagename")
 

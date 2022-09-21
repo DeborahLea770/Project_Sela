@@ -15,14 +15,14 @@ import random
 import string
 from selenium.webdriver.common.by import By
 import logging
-from UI.conftest import chromeDriver
+from UI.conftest import package_name
 
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
 logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.ERROR)
 mylogger = logging.getLogger()
-chrom_driver_path = chromeDriver
+chrom_driver_path = package_name
 
 
 def enter_main_page(url) -> BasicPage:
