@@ -6,9 +6,9 @@ to run with default url and all tests
 
  pytest .\UI\Selenium\test_ui.py 
 
-to run with your own url and package driver if you run locally server
+to run with your own url and browser if you run locally server
 
-pytest .\UI\Selenium\test_ui.py --url http://localhost --packagename C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe
+pytest .\UI\Selenium\test_ui.py --url http://localhost --brow edge
 
 allure reports
 
