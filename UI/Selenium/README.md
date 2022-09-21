@@ -2,6 +2,14 @@
 
 In this project im testing a small part of the UI of automation practice store site. im using selenium lib.
 
+to run with default url and all tests
+
+ pytest .\UI\Selenium\test_ui.py 
+
+to run with your own url and package driver if you run locally server
+
+pytest .\UI\Selenium\test_ui.py --url http://localhost --packagename C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe
+
 allure reports
 
 <img width="960" alt="allure_ui_selenium" src="https://user-images.githubusercontent.com/67972489/191495503-38af0edc-ace7-46b8-920a-987c314c240c.png">
