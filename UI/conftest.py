@@ -19,7 +19,7 @@ def unregister_user():
 def pytest_addoption(parser):
     parser.addoption("--url", action="store", default="http://localhost")
     parser.addoption("--brow", action="store", default="chrome")
-    parser.addoption("--packagename", action="store", default="C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe")
+    #parser.addoption("--packagename", action="store", default="C:/Users/debor/Downloads/chromedriver_win32/chromedriver.exe")
 
 
 @pytest.fixture
@@ -41,13 +41,13 @@ def brow(pytestconfig) -> str:
     """
     return pytestconfig.getoption("brow")
 
-#selenium
-@pytest.fixture
-def package_name(pytestconfig) -> str:
-    """
-    give the package_name from pytest options
-    :param pytestconfig: pytestconfig fixture
-    :return: package_name to integrate
-    """
-    return pytestconfig.getoption("packagename")
+# #selenium
+# @pytest.fixture
+# def package_name(pytestconfig) -> str:
+#     """
+#     give the package_name from pytest options
+#     :param pytestconfig: pytestconfig fixture
+#     :return: package_name to integrate
+#     """
+#     return pytestconfig.getoption("packagename")
 
